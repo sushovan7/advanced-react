@@ -1,9 +1,17 @@
-import DateCounter from "./DateCounter";
+import React from "react";
+import Header from "../src/Header";
 
-export default function App() {
+import Main from "./Main";
+function app() {
   return (
     <div>
-      <DateCounter />
+      <Header />
+      <Main>
+        <p>1/15</p>
+        <p>questions?</p>
+      </Main>
     </div>
   );
 }
+
+export default app;
