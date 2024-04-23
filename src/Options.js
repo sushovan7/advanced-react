@@ -2,6 +2,7 @@ import React from "react";
 
 function Options({ questions, dispatch, answer }) {
   const hasAnswered = answer !== null;
+  console.log(hasAnswered);
   return (
     <div className="options">
       {questions.options.map((option, index) => (
@@ -13,7 +14,7 @@ function Options({ questions, dispatch, answer }) {
                 : "wrong"
               : ""
           } `}
-          // disabled={hasAnswered}
+          disabled={hasAnswered}
           key={option}
           onClick={() => dispatch({ type: "dataDelivered", payload: index })}
         >
