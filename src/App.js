@@ -7,6 +7,7 @@ import Ready from "./Ready";
 import Questions from "./Questions";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
+import Finished from "./Finished";
 
 const initialState = {
   questions: [],
@@ -33,6 +34,11 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+      };
+    case "end":
+      return {
+        ...state,
+        status: "finished",
       };
     case "dataDelivered":
       const question = state.questions.at(state.index);
@@ -79,6 +85,7 @@ function App() {
         index={index}
         questionsLength={questionsLength}
         totalPoints={totalPoints}
+        answer={answer}
       />
       <Main>
         {status === "loading" && <Loader />}
@@ -95,6 +102,9 @@ function App() {
             />
             <NextButton dispatch={dispatch} answer={answer} />
           </>
+        )}
+        {status === "finished" && (
+          <Finished points={points} totalPoints={totalPoints} />
         )}
       </Main>
     </div>
