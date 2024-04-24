@@ -8,6 +8,10 @@ import Questions from "./Questions";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
 import Finished from "./Finished";
+import Footer from "./Footer";
+import Timer from "./Timer";
+
+const SECS_PER_QUESTIONS = 30;
 
 const initialState = {
   questions: [],
@@ -16,6 +20,7 @@ const initialState = {
   points: 0,
   answer: null,
   highScore: 0,
+  remainingSeconds: null,
 };
 
 function reducer(state, action) {
@@ -35,6 +40,7 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+        remainingSeconds: state.questions.length * SECS_PER_QUESTIONS,
       };
     case "end":
       return {
@@ -74,14 +80,22 @@ function reducer(state, action) {
         answer: null,
         highScore: 0,
       };
+    case "timer":
+      return {
+        ...state,
+        remainingSeconds: state.remainingSeconds - 1,
+        status: state.remainingSeconds <= 0 ? "finished" : state.status,
+      };
     default:
       throw new Error("action unKnown");
   }
 }
 
 function App() {
-  const [{ questions, status, index, answer, points, highScore }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { questions, status, index, answer, points, highScore, remainingSeconds },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   const questionsLength = questions.length;
   const totalPoints = questions.reduce((acc, curr) => acc + curr.points, 0);
@@ -116,12 +130,15 @@ function App() {
               answer={answer}
               dispatch={dispatch}
             />
-            <NextButton
-              dispatch={dispatch}
-              answer={answer}
-              index={index}
-              questionsLength={questionsLength}
-            />
+            <Footer>
+              <Timer remainingSeconds={remainingSeconds} dispatch={dispatch} />
+              <NextButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                questionsLength={questionsLength}
+              />
+            </Footer>
           </>
         )}
         {status === "finished" && (
