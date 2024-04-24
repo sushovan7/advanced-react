@@ -2,6 +2,10 @@ import React from "react";
 import Options from "./Options";
 
 function Questions({ questions, answer, dispatch }) {
+  if (!questions) {
+    console.error("Question data is not provided");
+    return null; // or some fallback UI
+  }
   console.log(questions);
   return (
     <div>

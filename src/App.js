@@ -15,6 +15,7 @@ const initialState = {
   index: 0,
   points: 0,
   answer: null,
+  highScore: 0,
 };
 
 function reducer(state, action) {
@@ -40,6 +41,7 @@ function reducer(state, action) {
         ...state,
         status: "finished",
       };
+
     case "dataDelivered":
       const question = state.questions.at(state.index);
       return {
@@ -56,16 +58,30 @@ function reducer(state, action) {
         index: state.index + 1,
         answer: null,
       };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highScore:
+          state.points > state.highScore ? state.points : state.highScore,
+      };
+    case "restart":
+      return {
+        ...state,
+        status: "ready",
+        index: 0,
+        points: 0,
+        answer: null,
+        highScore: 0,
+      };
     default:
       throw new Error("action unKnown");
   }
 }
 
 function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ questions, status, index, answer, points, highScore }, dispatch] =
+    useReducer(reducer, initialState);
 
   const questionsLength = questions.length;
   const totalPoints = questions.reduce((acc, curr) => acc + curr.points, 0);
@@ -80,13 +96,6 @@ function App() {
   return (
     <div>
       <Header />
-      <Progress
-        points={points}
-        index={index}
-        questionsLength={questionsLength}
-        totalPoints={totalPoints}
-        answer={answer}
-      />
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
@@ -95,16 +104,33 @@ function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              points={points}
+              index={index}
+              questionsLength={questionsLength}
+              totalPoints={totalPoints}
+              answer={answer}
+            />
             <Questions
               questions={questions[index]}
               answer={answer}
               dispatch={dispatch}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              questionsLength={questionsLength}
+            />
           </>
         )}
         {status === "finished" && (
-          <Finished points={points} totalPoints={totalPoints} />
+          <Finished
+            points={points}
+            totalPoints={totalPoints}
+            highScore={highScore}
+            dispatch={dispatch}
+          />
         )}
       </Main>
     </div>
